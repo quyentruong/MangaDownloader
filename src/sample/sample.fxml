@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0"
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0"
             prefWidth="736.0" stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
@@ -80,5 +80,10 @@
                           style="-fx-background-color: ghostwhite; -fx-border-color: lightgray;"/>
             </content>
         </ScrollPane>
+        <Label layoutX="227.0" layoutY="528.0" text="All rights reserved, Quyen Truong, 2018">
+            <font>
+                <Font name="Calibri Italic" size="18.0"/>
+            </font>
+        </Label>
     </children>
 </AnchorPane>

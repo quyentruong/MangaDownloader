@@ -14,12 +14,9 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/assets/icon.png")));
         primaryStage.setTitle("Manga Downloader");
-        primaryStage.setScene(new Scene(root, 736, 541));
+        primaryStage.setScene(new Scene(root, 736, 558));
         primaryStage.show();
 
-//        primaryStage.setOnCloseRequest(event -> {
-//            Platform.exit();
-//        });
     }
 
 

@@ -286,8 +286,6 @@ public class Controller implements Initializable {
             assert doc != null : "doc cannot be empty";
             showText("Please wait until it's done ...");
 
-//            System.exit(0);
-//            extra.OutputToFile(title.text());
             title = doc.select(website.getString("mangaTitle")).first();
             showText(String.format("Fetching %s...", url), true);
             List<Element> chaps = doc.select(website.getString("listChap"));
