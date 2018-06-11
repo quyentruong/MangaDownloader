@@ -1,0 +1,7 @@
+#warning {
+    -fx-text-fill: red;
+}
+
+#default {
+    -fx-text-fill: black;
+}

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0"
+            prefWidth="736.0" stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+    <children>
+        <Label layoutX="19.0" layoutY="20.0" text="URL">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="urlTxt" layoutX="77.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                   prefHeight="44.0" prefWidth="645.0" style="-fx-text-fill: blue;"
+                   text="https://hamtruyen.com/vo-than-chua-te-0.html">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <tooltip>
+                <Tooltip text="Input link "/>
+            </tooltip>
+        </TextField>
+        <Button fx:id="StartBtn" layoutX="296.0" layoutY="75.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                mnemonicParsing="false" prefHeight="63.0" prefWidth="150.0" text="Start">
+            <font>
+                <Font size="26.0"/>
+            </font>
+        </Button>
+        <Button fx:id="HelpBtn" layoutX="538.0" layoutY="75.0" mnemonicParsing="false" prefHeight="63.0"
+                prefWidth="150.0" text="Help">
+            <font>
+                <Font size="26.0"/>
+            </font>
+        </Button>
+        <Label layoutX="16.0" layoutY="72.0" text="Begin Chap">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
+        <Label layoutX="16.0" layoutY="106.0" text="End Chap">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
+        <TextField fx:id="beginTxt" layoutX="145.0" layoutY="74.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                   prefHeight="39.0" prefWidth="70.0" text="1">
+            <tooltip>
+                <Tooltip text="Which chapter to start download"/>
+            </tooltip>
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </TextField>
+        <TextField fx:id="endTxt" layoutX="145.0" layoutY="108.0" maxHeight="-Infinity" maxWidth="-Infinity"
+                   prefHeight="39.0" prefWidth="70.0" text="20">
+            <tooltip>
+                <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
+            </tooltip>
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </TextField>
+        <Label layoutX="19.0" layoutY="143.0" text="Status">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
+        <Button fx:id="StopBtn" layoutX="296.0" layoutY="75.0" mnemonicParsing="false" prefHeight="63.0"
+                prefWidth="150.0" text="Stop" visible="false">
+            <font>
+                <Font size="26.0"/>
+            </font>
+        </Button>
+        <ScrollPane fitToWidth="true" hvalue="0.42" layoutX="18.0" layoutY="181.0" maxHeight="-Infinity"
+                    maxWidth="-Infinity" prefHeight="344.0" prefWidth="706.0" vvalue="0.43">
+            <content>
+                <TextFlow fx:id="statusTxt" prefHeight="342.0" prefWidth="704.0"
+                          style="-fx-background-color: ghostwhite; -fx-border-color: lightgray;"/>
+            </content>
+        </ScrollPane>
+    </children>
+</AnchorPane>
