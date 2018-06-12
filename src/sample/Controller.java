@@ -1,9 +1,10 @@
 package sample;
 
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
@@ -37,21 +38,13 @@ import java.util.function.UnaryOperator;
  * @author Quyen Truong
  * @version 1.0
  */
-class Controller implements Initializable {
+public class Controller implements Initializable {
     private File selectedDirectory;
     private ArrayList<String> log;
+    private Boolean isLog = false;
 
     @FXML
-    private TextField urlTxt;
-
-    @FXML
-    private Button StartBtn;
-
-    @FXML
-    private TextFlow statusTxt;
-
-    @FXML
-    private Button HelpBtn;
+    private TextField urlTxt2;
 
     @FXML
     private TextField beginTxt;
@@ -60,7 +53,19 @@ class Controller implements Initializable {
     private TextField endTxt;
 
     @FXML
-    private Button StopBtn;
+    private TextFlow statusTxt;
+
+    @FXML
+    private JFXTextField urlTxt;
+
+    @FXML
+    private JFXButton HelpBtn;
+
+    @FXML
+    private JFXButton StartBtn;
+
+    @FXML
+    private JFXButton StopBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -71,6 +76,7 @@ class Controller implements Initializable {
             if (selectedDirectory == null) {
                 showText("No Directory selected", false, true);
             } else {
+                isLog = true;
                 log = new ArrayList<>();
                 ct.start();
                 StartBtn.setVisible(false);
@@ -81,8 +87,10 @@ class Controller implements Initializable {
             ct.stop();
             StartBtn.setVisible(true);
             StopBtn.setVisible(false);
+            isLog = false;
         });
         HelpBtn.setOnAction(event -> {
+            isLog = false;
             showText("Support: hamtruyen, truyensieuhay, nettruyen\n               truyenchon, truyenpub, uptruyen");
             showText("Put the same number in 'begin' and 'end' chap will download that Chapter.\nEx: Put 20 in 'begin' and 'end' will download Chapter 20", true);
             showText("Put in URL like examples below", true);
@@ -148,7 +156,7 @@ class Controller implements Initializable {
             t.setFont(Font.font(20));
             if (warning) t.setFill(Color.RED);
             statusTxt.getChildren().add(t);
-            log.add(text);
+            if (isLog) log.add(text);
         });
 
     }
