@@ -19,8 +19,12 @@ class Extra {
         ps_console = System.out;
     }
 
-    //    https://github.com/jhy/jsoup/issues/680
+//    https://github.com/jhy/jsoup/issues/680
 //    https://nanashi07.blogspot.com/2014/06/enable-ssl-connection-for-jsoup.html
+
+    /**
+     * Use this one before use Jsoup.connect to solve ssl problem
+     */
     void enableSSLSocket() {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
@@ -49,6 +53,7 @@ class Extra {
         HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
     }
 
+    @Deprecated
     void OutputToFile(String FileName) {
         File file = new File(FileName);
         FileOutputStream fos = null;
@@ -66,6 +71,7 @@ class Extra {
         System.setOut(ps);
     }
 
+    @Deprecated
     void OutputToConsole() {
         System.setOut(ps_console);
     }

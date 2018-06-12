@@ -31,7 +31,13 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
-public class Controller implements Initializable {
+/**
+ * Control elements in UI
+ *
+ * @author Quyen Truong
+ * @version 1.0
+ */
+class Controller implements Initializable {
     private File selectedDirectory;
     private ArrayList<String> log;
 
@@ -65,7 +71,6 @@ public class Controller implements Initializable {
             if (selectedDirectory == null) {
                 showText("No Directory selected", false, true);
             } else {
-//                System.out.println(selectedDirectory.getAbsolutePath());
                 log = new ArrayList<>();
                 ct.start();
                 StartBtn.setVisible(false);
@@ -88,6 +93,10 @@ public class Controller implements Initializable {
         ChapterTextFormat();
     }
 
+    /**
+     * Text format for 'begin' and 'end' TextField
+     * such as Limit to 4 chars and only allow numbers
+     */
     private void ChapterTextFormat() {
         UnaryOperator<TextFormatter.Change> integerFilter = change -> {
             String input = change.getText();
@@ -108,9 +117,12 @@ public class Controller implements Initializable {
         endTxt.setTextFormatter(new TextFormatter<>(integerFilter));
     }
 
-    private void ClickAbleLink(String text) {
+    /**
+     * @param link A valid link to click and add to TextFlow
+     */
+    private void ClickAbleLink(String link) {
         Platform.runLater(() -> {
-            Hyperlink example = new Hyperlink(text);
+            Hyperlink example = new Hyperlink(link);
             example.setFont(Font.font(20));
             example.setOnAction(event1 -> {
                 try {
@@ -123,6 +135,11 @@ public class Controller implements Initializable {
         });
     }
 
+    /**
+     * @param text    A simple text
+     * @param append  Set true to append without clear old text in TextFlow
+     * @param warning Set true the text is red. Otherwise, black
+     */
     private void showText(String text, boolean append, boolean warning) {
         Platform.runLater(() -> {
             if (!append) statusTxt.getChildren().clear();
@@ -136,15 +153,26 @@ public class Controller implements Initializable {
 
     }
 
+    /**
+     * @param text   A simple text
+     * @param append Set true to append without clear old text in TextFlow
+     */
     private void showText(String text, boolean append) {
         showText(text, append, false);
     }
 
+    /**
+     * This method cleans old text
+     * @param text A simple text
+     */
     private void showText(String text) {
         showText(text, false, false);
     }
 
-    class ControlSubThread implements Runnable {
+    /**
+     * Thread to run DownloadSaveChap() of Modules
+     */
+    private class ControlSubThread implements Runnable {
         Modules Manga;
         private Thread worker;
 
@@ -165,7 +193,10 @@ public class Controller implements Initializable {
         }
     }
 
-    class Modules {
+    /**
+     * Parse all information in manga website then start download
+     */
+    private class Modules {
         private String url;
         private int begin;
         private int end;
@@ -178,6 +209,12 @@ public class Controller implements Initializable {
             this.stop = stop;
         }
 
+        /**
+         * For example, download this manga from chapter 1 to chapter 30
+         * @param url Ex:http://truyensieuhay.com/thoi-dai-x-long-1386.html
+         * @param begin Ex: 1
+         * @param end Ex: 30
+         */
         Modules(String url, int begin, int end) {
             this.url = url;
             this.begin = begin;
@@ -254,6 +291,10 @@ public class Controller implements Initializable {
             StopBtn.setVisible(false);
         }
 
+        /**
+         *
+         * @return List of chapter of a manga
+         */
         private List<String> getListChapter() {
             URI uri = null;
             try {

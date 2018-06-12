@@ -7,6 +7,12 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+/**
+ * Start UI
+ *
+ * @author Quyen Truong
+ * @version 1.0
+ */
 public class Main extends Application {
 
     @Override

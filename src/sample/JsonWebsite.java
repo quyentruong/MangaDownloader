@@ -46,7 +46,19 @@ class JsonWebsite {
                 "a", "div#reader-box img.img-page", "div#reader-box img.page-scroll-1");
     }
 
+
     private class VNManga {
+        /**
+         * If you want update a new website that loading many pages at once, start with this templage.
+         * Otherwise, it doesn't work with a website only load one page at once.
+         *
+         * @param name       Name of manga website without .com, wwww, http(s). Ex: hamtruyen
+         * @param mangaTitle Title of a manga. Often start with 'h1'
+         * @param listChap   List of available chapters in that page. Often start with 'div' and has class 'list', 'chapter'
+         * @param linkChap   Link to get to that chapter. Often start with 'a', a child of listChap
+         * @param pages      Number of available pages in that chapter. Often end with img.
+         * @param chapTitle  Chapter number. This one is tricky to get. Often start with h1, or get directly from img
+         */
         private VNManga(String name, String mangaTitle, String listChap, String linkChap, String pages, String chapTitle) {
             JSONObject json = new JSONObject();
             json.put("name", name);
