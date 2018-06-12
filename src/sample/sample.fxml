@@ -15,16 +15,6 @@
                 <Font size="23.0"/>
             </font>
         </Label>
-        <TextField fx:id="urlTxt2" layoutX="77.0" layoutY="15.0" maxHeight="-Infinity" maxWidth="-Infinity"
-                   prefHeight="44.0" prefWidth="645.0" style="-fx-text-fill: blue;"
-                   text="https://hamtruyen.com/vo-than-chua-te-0.html" visible="false">
-            <font>
-                <Font size="18.0"/>
-            </font>
-            <tooltip>
-                <Tooltip text="Input link "/>
-            </tooltip>
-        </TextField>
         <Label layoutX="16.0" layoutY="72.0" text="Begin Chap">
             <font>
                 <Font size="23.0"/>
@@ -76,6 +66,9 @@
             <font>
                 <Font size="18.0"/>
             </font>
+            <tooltip>
+                <Tooltip text="Input link "/>
+            </tooltip>
         </JFXTextField>
         <JFXButton fx:id="HelpBtn" layoutX="538.0" layoutY="75.0" prefHeight="63.0" prefWidth="150.0"
                    ripplerFill="#3124a8" text="Help" textFill="#37353c">

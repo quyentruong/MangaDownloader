@@ -36,15 +36,13 @@ import java.util.function.UnaryOperator;
  * Control elements in UI
  *
  * @author Quyen Truong
- * @version 1.0
+ * @version 1.1
  */
 public class Controller implements Initializable {
     private File selectedDirectory;
     private ArrayList<String> log;
     private Boolean isLog = false;
-
-    @FXML
-    private TextField urlTxt2;
+    private Boolean stop = false;
 
     @FXML
     private TextField beginTxt;
@@ -79,12 +77,14 @@ public class Controller implements Initializable {
                 isLog = true;
                 log = new ArrayList<>();
                 ct.start();
+                HelpBtn.setDisable(true);
                 StartBtn.setVisible(false);
                 StopBtn.setVisible(true);
             }
         });
         StopBtn.setOnAction(event -> {
             ct.stop();
+            HelpBtn.setDisable(false);
             StartBtn.setVisible(true);
             StopBtn.setVisible(false);
             isLog = false;
@@ -171,6 +171,7 @@ public class Controller implements Initializable {
 
     /**
      * This method cleans old text
+     *
      * @param text A simple text
      */
     private void showText(String text) {
@@ -191,7 +192,7 @@ public class Controller implements Initializable {
         }
 
         void stop() {
-            Manga.setStop(true);
+            stop = true;
         }
 
         @Override
@@ -211,17 +212,13 @@ public class Controller implements Initializable {
         private Element title;
         private JSONObject website;
         private Extra extra;
-        private Boolean stop = false;
-
-        void setStop(Boolean stop) {
-            this.stop = stop;
-        }
 
         /**
          * For example, download this manga from chapter 1 to chapter 30
-         * @param url Ex:http://truyensieuhay.com/thoi-dai-x-long-1386.html
+         *
+         * @param url   Ex:http://truyensieuhay.com/thoi-dai-x-long-1386.html
          * @param begin Ex: 1
-         * @param end Ex: 30
+         * @param end   Ex: 30
          */
         Modules(String url, int begin, int end) {
             this.url = url;
@@ -235,14 +232,25 @@ public class Controller implements Initializable {
 
         void DownloadSaveChap() {
             List<String> links = getListChapter();
-            if (links.isEmpty()) return;
+            if (links.isEmpty()) {
+                stopAction(false);
+                return;
+            }
 
             for (String url : links) {
-                Document doc = null;
+                Document doc;
                 try {
                     doc = Jsoup.connect(url).timeout(10000).get();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    try {
+                        showText("Connection problem. Trying to reconnect ...", true, true);
+                        doc = Jsoup.connect(url).timeout(50000).get();
+                    } catch (IOException e1) {
+                        showText("Cannot reconnect. Please try download again later.", true, true);
+                        stopAction(true);
+                        return;
+//                        e1.printStackTrace();
+                    }
                 }
                 assert doc != null;
                 Elements pages = doc.select(website.getString("pages"));
@@ -256,15 +264,19 @@ public class Controller implements Initializable {
                 for (Element page : pages) {
                     if (stop) {
                         showText("Stop downloading", true, true);
+                        stopAction(true);
+                        stop = false;
                         return;
                     }
                     String src = page.attr("src");
+
                     String decode;
                     URL image;
                     String fileName = String.format("%s/%s/%s/%s/%03d.jpg", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text(), chapTitle_s, pageNumber);
                     try {
                         decode = URLDecoder.decode(src, "UTF-8");
-                        image = new URL(src);
+                        if (!decode.contains("http")) decode = "https:" + decode;
+                        image = new URL(decode);
                         if (decode.contains("url")) {
                             image = new URL(decode.split("url=")[1]);
                         }
@@ -280,13 +292,18 @@ public class Controller implements Initializable {
                     pageNumber += 1;
                 }
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
             showText("Done", true);
-            showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
+            stopAction(true);
+        }
+
+        private void stopAction(boolean downloaded) {
+            if (downloaded)
+                showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
             try (PrintWriter writer = new PrintWriter(title.text() + ".log", "UTF-8")) {
                 for (String l : log) {
                     writer.println(l);
@@ -297,13 +314,17 @@ public class Controller implements Initializable {
             showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), title.text()), true);
             StartBtn.setVisible(true);
             StopBtn.setVisible(false);
+            HelpBtn.setDisable(false);
         }
 
         /**
-         *
          * @return List of chapter of a manga
          */
         private List<String> getListChapter() {
+            if (website == null) {
+                showText("Invalid URL", false, true);
+                return Collections.emptyList();
+            }
             URI uri = null;
             try {
                 uri = new URI(url);
@@ -359,6 +380,8 @@ public class Controller implements Initializable {
                         link.contains(website.getString("name")) ? "" : domain, link);
                 links.add(link);
             }
+//            System.out.println(links);
+//            System.exit(0);
             return links;
         }
     }

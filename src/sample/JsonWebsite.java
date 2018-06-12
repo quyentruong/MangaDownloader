@@ -9,15 +9,25 @@ class JsonWebsite {
     private JSONObject website;
     private JSONObject websites;
     private Set<String> mangaSet;
+    private boolean isValidURL;
 
 
     JsonWebsite(String url) {
         mangaSet = new HashSet<>();
         init();
+
         for (String w : mangaSet) {
             if (url.contains(w)) {
                 website = websites.getJSONObject(w);
+                isValidURL = true;
+                break;
+            } else {
+                isValidURL = false;
             }
+        }
+
+        if (!isValidURL || url.toLowerCase().contains("chap")) {
+            website = null;
         }
     }
 
