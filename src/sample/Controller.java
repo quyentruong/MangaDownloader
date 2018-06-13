@@ -1,11 +1,13 @@
 package sample;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.paint.Color;
@@ -22,10 +24,7 @@ import org.jsoup.select.Elements;
 
 import java.awt.*;
 import java.io.*;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLDecoder;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -36,9 +35,10 @@ import java.util.function.UnaryOperator;
  * Control elements in UI
  *
  * @author Quyen Truong
- * @version 1.2
+ * @version 1.3
  */
 public class Controller implements Initializable {
+
     private File selectedDirectory;
     private ArrayList<String> log;
     private Boolean isLog = false;
@@ -65,6 +65,13 @@ public class Controller implements Initializable {
     @FXML
     private JFXButton StopBtn;
 
+    @FXML
+    private JFXProgressBar pbar;
+
+    @FXML
+    private Label processTxt;
+
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ControlSubThread ct = new ControlSubThread();
@@ -77,17 +84,13 @@ public class Controller implements Initializable {
                 isLog = true;
                 log = new ArrayList<>();
                 ct.start();
-                HelpBtn.setDisable(true);
-                StartBtn.setVisible(false);
-                StopBtn.setVisible(true);
+                statusComponent(false);
                 statusTxt.requestFocus();
             }
         });
         StopBtn.setOnAction(event -> {
             ct.stop();
-            HelpBtn.setDisable(false);
-            StartBtn.setVisible(true);
-            StopBtn.setVisible(false);
+            statusComponent(true);
             isLog = false;
         });
         HelpBtn.setOnAction(event -> {
@@ -125,6 +128,28 @@ public class Controller implements Initializable {
         });
         beginTxt.setTextFormatter(new TextFormatter<>(integerFilter));
         endTxt.setTextFormatter(new TextFormatter<>(integerFilter));
+    }
+
+    private void statusComponent(boolean stop) {
+        if (stop) {
+            StartBtn.setVisible(true);
+            StopBtn.setVisible(false);
+            HelpBtn.setDisable(false);
+            urlTxt.setDisable(false);
+            beginTxt.setDisable(false);
+            endTxt.setDisable(false);
+            pbar.setVisible(false);
+            processTxt.setVisible(false);
+        } else {
+            StartBtn.setVisible(false);
+            StopBtn.setVisible(true);
+            HelpBtn.setDisable(true);
+            urlTxt.setDisable(true);
+            beginTxt.setDisable(true);
+            endTxt.setDisable(true);
+            pbar.setVisible(true);
+            processTxt.setVisible(true);
+        }
     }
 
     /**
@@ -188,6 +213,7 @@ public class Controller implements Initializable {
         private Thread worker;
 
         void start() {
+            stop = false;
             worker = new Thread(this);
             worker.setDaemon(true);
             worker.start();
@@ -260,8 +286,9 @@ public class Controller implements Initializable {
 
                 String chapTitle_s = chapTitle.text().toLowerCase().contains("chap") ? chapTitle.text() : chapTitle.attr("alt");
                 chapTitle_s = chapTitle_s.replaceAll("[\\\\/:*?\"<>|]", "");
-                showText(String.format("Downloading %s ...", chapTitle_s), true);
+                if (!stop) showText(String.format("Downloading %s ...", chapTitle_s), true);
                 int pageNumber = 1;
+                pbar.setProgress(0);
 
                 for (Element page : pages) {
                     if (stop) {
@@ -272,17 +299,30 @@ public class Controller implements Initializable {
                     }
                     String src = page.attr("src");
 
-                    String decode;
                     URL image;
-                    String fileName = String.format("%s/%s/%s/%s/%03d.jpg", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text(), chapTitle_s, pageNumber);
+                    String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text(), chapTitle_s, pageNumber);
                     try {
-                        decode = URLDecoder.decode(src, "UTF-8");
-                        if (!decode.contains("http")) decode = "https:" + decode;
-                        image = new URL(decode);
-                        if (decode.contains("url")) {
-                            image = new URL(decode.split("url=")[1]);
+
+                        String temp = URLDecoder.decode(src, "UTF-8");
+                        temp = URLEncoder.encode(temp, "UTF-8");
+                        if (src.equals(temp))
+                            src = URLDecoder.decode(src, "UTF-8");
+
+                        if (!src.contains("http")) src = "https:" + src;
+                        image = new URL(src);
+                        if (src.contains("url")) {
+                            image = new URL(src.split("url=")[1]);
                         }
                         FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
+
+                        if (extra.isValidJPG(fileName))
+                            FileUtils.moveFile(new File(fileName), new File(fileName + ".jpg"));
+                        else if (extra.isValidPNG(fileName))
+                            FileUtils.moveFile(new File(fileName), new File(fileName + ".png"));
+                        else if (extra.isValidGIF(fileName)) {
+                            FileUtils.forceDelete(new File(fileName));
+                            showText(String.format("Delete %s", fileName + ".gif"), true, true);
+                        }
                     } catch (Exception e) {
                         try {
                             new RandomAccessFile(new File(fileName), "rw").setLength(100);
@@ -291,6 +331,10 @@ public class Controller implements Initializable {
                             showText(fileName + " is not available", true, true);
                         }
                     }
+                    int finalPageNumber = pageNumber;
+                    Platform.runLater(() -> processTxt.setText(String.format("%d/%d", finalPageNumber, pages.size())));
+
+                    pbar.setProgress(pageNumber * 1.0 / pages.size());
                     pageNumber += 1;
                 }
                 try {
@@ -307,17 +351,15 @@ public class Controller implements Initializable {
             if (downloaded)
                 showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
 
-            try (PrintWriter writer = new PrintWriter(title != null ? title.text() : "error" + ".log", "UTF-8")) {
+            try (PrintWriter writer = new PrintWriter(String.format("%s.log", title != null ? title.text() : "error"), "UTF-8")) {
                 for (String l : log) {
                     writer.println(l);
                 }
             } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            showText(String.format("Log saved in %s/%s", System.getProperty("user.dir"), title != null ? title.text() : "error" + ".log"), true);
-            StartBtn.setVisible(true);
-            StopBtn.setVisible(false);
-            HelpBtn.setDisable(false);
+            showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), title != null ? title.text() : "error"), true);
+            statusComponent(true);
         }
 
         /**
@@ -348,7 +390,7 @@ public class Controller implements Initializable {
             }
 
 
-            Document doc = null;
+            Document doc;
             extra.enableSSLSocket();
             try {
                 doc = Jsoup.connect(url).timeout(10000).get();

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
-<?import com.jfoenix.controls.JFXTextField?>
+<?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="558.0" prefWidth="736.0" stylesheets="@../assets/style.css"
-            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="sample.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0"
+            prefWidth="736.0" stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <Label layoutX="19.0" layoutY="20.0" text="URL">
             <font>
@@ -72,7 +70,7 @@
                 <Tooltip text="Input link "/>
             </tooltip>
         </JFXTextField>
-        <JFXButton fx:id="HelpBtn" layoutX="538.0" layoutY="75.0" prefHeight="63.0" prefWidth="150.0"
+        <JFXButton fx:id="HelpBtn" layoutX="574.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
                    ripplerFill="#3124a8" text="Help" textFill="#37353c">
             <font>
                 <Font size="26.0"/>
@@ -81,7 +79,7 @@
                 <Shadow/>
             </effect>
         </JFXButton>
-        <JFXButton fx:id="StartBtn" layoutX="296.0" layoutY="75.0" prefHeight="63.0" prefWidth="150.0"
+        <JFXButton fx:id="StartBtn" layoutX="424.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
                    ripplerFill="#3124a8" text="Start" textFill="#37353c">
             <font>
                 <Font size="26.0"/>
@@ -90,7 +88,7 @@
                 <Shadow/>
             </effect>
         </JFXButton>
-        <JFXButton fx:id="StopBtn" layoutX="296.0" layoutY="75.0" prefHeight="63.0" prefWidth="150.0"
+        <JFXButton fx:id="StopBtn" layoutX="424.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
                    ripplerFill="#3124a8" text="Stop" textFill="#37353c" visible="false">
             <font>
                 <Font size="26.0"/>
@@ -99,5 +97,11 @@
                 <Shadow/>
             </effect>
         </JFXButton>
+        <JFXProgressBar fx:id="pbar" layoutX="228.0" layoutY="91.0" prefHeight="34.0" progress="0.0" visible="false"/>
+        <Label fx:id="processTxt" layoutX="305.0" layoutY="91.0" visible="false">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
     </children>
 </AnchorPane>
