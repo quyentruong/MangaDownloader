@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -44,9 +43,6 @@ public class Controller implements Initializable {
     private ArrayList<String> log;
     private Boolean isLog = false;
     private Boolean stop = false;
-
-    @FXML
-    private AnchorPane anchorPane;
 
     @FXML
     private TextField beginTxt;
