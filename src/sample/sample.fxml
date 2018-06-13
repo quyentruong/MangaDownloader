@@ -6,9 +6,10 @@
 <?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0"
-            prefWidth="736.0" stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="558.0" prefWidth="736.0" stylesheets="@../assets/style.css"
+            xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="sample.Controller">
     <children>
         <Label layoutX="19.0" layoutY="20.0" text="URL">
             <font>
@@ -25,8 +26,8 @@
                 <Font size="23.0"/>
             </font>
         </Label>
-        <TextField fx:id="beginTxt" layoutX="145.0" layoutY="74.0" maxHeight="-Infinity" maxWidth="-Infinity"
-                   prefHeight="39.0" prefWidth="70.0" text="1">
+        <TextField fx:id="beginTxt" focusTraversable="false" layoutX="145.0" layoutY="74.0" maxHeight="-Infinity"
+                   maxWidth="-Infinity" prefHeight="39.0" prefWidth="70.0" text="1">
             <tooltip>
                 <Tooltip text="Which chapter to start download"/>
             </tooltip>
@@ -34,8 +35,8 @@
                 <Font size="18.0"/>
             </font>
         </TextField>
-        <TextField fx:id="endTxt" layoutX="145.0" layoutY="108.0" maxHeight="-Infinity" maxWidth="-Infinity"
-                   prefHeight="39.0" prefWidth="70.0" text="20">
+        <TextField fx:id="endTxt" focusTraversable="false" layoutX="145.0" layoutY="108.0" maxHeight="-Infinity"
+                   maxWidth="-Infinity" prefHeight="39.0" prefWidth="70.0" text="20">
             <tooltip>
                 <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
             </tooltip>
@@ -51,7 +52,7 @@
         <ScrollPane fitToWidth="true" hvalue="0.42" layoutX="18.0" layoutY="181.0" maxHeight="-Infinity"
                     maxWidth="-Infinity" prefHeight="344.0" prefWidth="706.0" vvalue="0.43">
             <content>
-                <TextFlow fx:id="statusTxt" prefHeight="342.0" prefWidth="704.0"
+                <TextFlow fx:id="statusTxt" focusTraversable="true" prefHeight="342.0" prefWidth="704.0"
                           style="-fx-background-color: ghostwhite; -fx-border-color: lightgray;"/>
             </content>
         </ScrollPane>
@@ -60,8 +61,9 @@
                 <Font name="Calibri Italic" size="18.0"/>
             </font>
         </Label>
-        <JFXTextField fx:id="urlTxt" focusColor="#5340a8" labelFloat="true" layoutX="77.0" layoutY="14.0"
-                      prefHeight="44.0" prefWidth="645.0" style="-fx-text-fill: blue; -fx-background-color: white;"
+        <JFXTextField fx:id="urlTxt" focusColor="#5340a8" focusTraversable="false" labelFloat="true" layoutX="77.0"
+                      layoutY="14.0" prefHeight="44.0" prefWidth="645.0"
+                      style="-fx-text-fill: blue; -fx-background-color: white;"
                       text="https://hamtruyen.com/vo-than-chua-te-0.html" unFocusColor="#363030">
             <font>
                 <Font size="18.0"/>

@@ -11,7 +11,7 @@ import javafx.stage.Stage;
  * Start UI
  *
  * @author Quyen Truong
- * @version 1.1
+ * @version 1.2
  */
 public class Main extends Application {
 

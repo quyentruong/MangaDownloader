@@ -8,6 +8,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
@@ -36,13 +37,16 @@ import java.util.function.UnaryOperator;
  * Control elements in UI
  *
  * @author Quyen Truong
- * @version 1.1
+ * @version 1.2
  */
 public class Controller implements Initializable {
     private File selectedDirectory;
     private ArrayList<String> log;
     private Boolean isLog = false;
     private Boolean stop = false;
+
+    @FXML
+    private AnchorPane anchorPane;
 
     @FXML
     private TextField beginTxt;
@@ -80,6 +84,7 @@ public class Controller implements Initializable {
                 HelpBtn.setDisable(true);
                 StartBtn.setVisible(false);
                 StopBtn.setVisible(true);
+                statusTxt.requestFocus();
             }
         });
         StopBtn.setOnAction(event -> {
@@ -99,6 +104,7 @@ public class Controller implements Initializable {
             ClickAbleLink("http://www.nettruyen.com/truyen-tranh/dau-la-dai-luc");
         });
         ChapterTextFormat();
+
     }
 
     /**
@@ -304,14 +310,15 @@ public class Controller implements Initializable {
         private void stopAction(boolean downloaded) {
             if (downloaded)
                 showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
-            try (PrintWriter writer = new PrintWriter(title.text() + ".log", "UTF-8")) {
+
+            try (PrintWriter writer = new PrintWriter(title != null ? title.text() : "error" + ".log", "UTF-8")) {
                 for (String l : log) {
                     writer.println(l);
                 }
             } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), title.text()), true);
+            showText(String.format("Log saved in %s/%s", System.getProperty("user.dir"), title != null ? title.text() : "error" + ".log"), true);
             StartBtn.setVisible(true);
             StopBtn.setVisible(false);
             HelpBtn.setDisable(false);
@@ -349,8 +356,9 @@ public class Controller implements Initializable {
             extra.enableSSLSocket();
             try {
                 doc = Jsoup.connect(url).timeout(10000).get();
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (Exception e) {
+                showText("Invalid URL", false, true);
+                return Collections.emptyList();
             }
 
             assert doc != null : "doc cannot be empty";
@@ -364,11 +372,16 @@ public class Controller implements Initializable {
 
             assert begin <= end : "begin has to be smaller than end";
             int maxChap = chaps.size();
-            showText("MaxChap: " + maxChap, true);
+            try {
+                showText("Found " + title.text(), true);
+                showText("MaxChap: " + maxChap, true);
+            } catch (NullPointerException e) {
+                showText("Found nothing", true, true);
+            }
             try {
                 chaps = chaps.subList(begin, end > maxChap ? maxChap : end);
-            } catch (IndexOutOfBoundsException e) {
-                showText(String.format("Chapter %d not exist", end), true);
+            } catch (IllegalArgumentException e) {
+                showText("'Begin chap' has to be less than 'End Chap'", true, true);
                 return Collections.emptyList();
             }
 
