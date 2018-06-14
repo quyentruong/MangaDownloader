@@ -6,11 +6,11 @@ import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -24,7 +24,9 @@ import org.jsoup.select.Elements;
 
 import java.awt.*;
 import java.io.*;
-import java.net.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -35,14 +37,16 @@ import java.util.function.UnaryOperator;
  * Control elements in UI
  *
  * @author Quyen Truong
- * @version 1.3
+ * @version 1.4
  */
 public class Controller implements Initializable {
-
     private File selectedDirectory;
     private ArrayList<String> log;
     private Boolean isLog = false;
     private Boolean stop = false;
+
+    @FXML
+    private AnchorPane anchorP;
 
     @FXML
     private TextField beginTxt;
@@ -71,9 +75,14 @@ public class Controller implements Initializable {
     @FXML
     private Label processTxt;
 
+    @FXML
+    private ScrollPane scrollP;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        HelpBtn.setId("circle");
+        StartBtn.setId("circle");
         ControlSubThread ct = new ControlSubThread();
         StartBtn.setOnAction(event -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
@@ -179,11 +188,12 @@ public class Controller implements Initializable {
         Platform.runLater(() -> {
             if (!append) statusTxt.getChildren().clear();
             Text t = new Text(text + "\n");
-            t.setFill(Color.BLACK);
-            t.setFont(Font.font(20));
-            if (warning) t.setFill(Color.RED);
+            t.setId("default");
+            if (warning) t.setId("warning");
             statusTxt.getChildren().add(t);
             if (isLog) log.add(text);
+            anchorP.layout();
+            scrollP.setVvalue(1);
         });
 
     }
@@ -300,26 +310,23 @@ public class Controller implements Initializable {
                     String src = page.attr("src");
 
                     URL image;
-                    String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text(), chapTitle_s, pageNumber);
+                    String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text().trim(), chapTitle_s.trim(), pageNumber);
                     try {
+                        image = extra.parseURL(src);
+                        if (image == null)
+                            throw new Exception("Cannot parse URL");
 
-                        String temp = URLDecoder.decode(src, "UTF-8");
-                        temp = URLEncoder.encode(temp, "UTF-8");
-                        if (src.equals(temp))
-                            src = URLDecoder.decode(src, "UTF-8");
-
-                        if (!src.contains("http")) src = "https:" + src;
-                        image = new URL(src);
-                        if (src.contains("url")) {
-                            image = new URL(src.split("url=")[1]);
-                        }
                         FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
 
-                        if (extra.isValidJPG(fileName))
+                        if (extra.isValidJPG(fileName)) {
+                            if (new File(fileName + ".jpg").exists())
+                                FileUtils.forceDelete(new File(fileName + ".jpg"));
                             FileUtils.moveFile(new File(fileName), new File(fileName + ".jpg"));
-                        else if (extra.isValidPNG(fileName))
+                        } else if (extra.isValidPNG(fileName)) {
+                            if (new File(fileName + ".png").exists())
+                                FileUtils.forceDelete(new File(fileName + ".png"));
                             FileUtils.moveFile(new File(fileName), new File(fileName + ".png"));
-                        else if (extra.isValidGIF(fileName)) {
+                        } else if (extra.isValidGIF(fileName)) {
                             FileUtils.forceDelete(new File(fileName));
                             showText(String.format("Delete %s", fileName + ".gif"), true, true);
                         }
@@ -350,15 +357,15 @@ public class Controller implements Initializable {
         private void stopAction(boolean downloaded) {
             if (downloaded)
                 showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
-
-            try (PrintWriter writer = new PrintWriter(String.format("%s.log", title != null ? title.text() : "error"), "UTF-8")) {
+            String logName = title != null ? title.text() + "_" + website.getString("name") : "error";
+            try (PrintWriter writer = new PrintWriter(String.format("%s.log", logName), "UTF-8")) {
                 for (String l : log) {
                     writer.println(l);
                 }
             } catch (FileNotFoundException | UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
-            showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), title != null ? title.text() : "error"), true);
+            showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), logName), true);
             statusComponent(true);
         }
 
@@ -420,6 +427,8 @@ public class Controller implements Initializable {
                 chaps = chaps.subList(begin, end > maxChap ? maxChap : end);
             } catch (IllegalArgumentException e) {
                 showText("'Begin chap' has to be less than 'End Chap'", true, true);
+                showText("Or 'Begin chap' doesn't exist", true, true);
+                showText("Or 'End chap' doesn't exist", true, true);
                 return Collections.emptyList();
             }
 
@@ -431,8 +440,7 @@ public class Controller implements Initializable {
                         link.contains(website.getString("name")) ? "" : domain, link);
                 links.add(link);
             }
-//            System.out.println(links);
-//            System.exit(0);
+
             return links;
         }
     }

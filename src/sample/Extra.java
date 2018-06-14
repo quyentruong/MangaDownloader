@@ -7,6 +7,10 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
 import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -95,6 +99,26 @@ class Extra {
         }
 
         return false;
+    }
+
+    URL parseURL(String src) {
+        if (src.contains("url=")) src = src.split("url=")[1];
+        if (src.contains("?imgmax=0")) src = src.replace("?imgmax=0", "").trim();
+        String temp = null;
+        try {
+            temp = URLDecoder.decode(src, "UTF-8");
+            temp = URLEncoder.encode(temp, "UTF-8");
+            if (src.equalsIgnoreCase(temp)) src = URLDecoder.decode(src, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            return null;
+        }
+
+        if (!src.contains("http")) src = "https:" + src;
+        try {
+            return new URL(src);
+        } catch (MalformedURLException e) {
+            return null;
+        }
     }
 
     @Deprecated

@@ -1,7 +1,29 @@
+#circle {
+    -fx-background-color: #FFF59D;
+    -fx-background-radius: 5em;
+    -fx-min-width: 100px;
+    -fx-min-height: 70px;
+    -fx-max-width: 100px;
+    -fx-max-height: 70px;
+}
+
+#textField, #textBackground {
+    -fx-background-color: #EEEEEE;
+    -fx-border-color: #9E9E9E;
+}
+
+#textField {
+    -fx-border-style: solid hidden hidden hidden;
+}
+
+#warning, #default {
+    -fx-font-size: 20;
+}
+
 #warning {
-    -fx-text-fill: red;
+    -fx-fill: #d50000;
 }
 
 #default {
-    -fx-text-fill: black;
+    -fx-fill: #212121;
 }

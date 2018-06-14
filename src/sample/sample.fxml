@@ -2,11 +2,13 @@
 
 <?import com.jfoenix.controls.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.Glow?>
 <?import javafx.scene.effect.Shadow?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0"
-            prefWidth="736.0" stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
+<AnchorPane fx:id="anchorP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+            prefHeight="558.0" prefWidth="736.0" style="-fx-background-color: #C8E6C9;"
+            stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
     <children>
         <Label layoutX="19.0" layoutY="20.0" text="URL">
@@ -19,39 +21,21 @@
                 <Font size="23.0"/>
             </font>
         </Label>
-        <Label layoutX="16.0" layoutY="106.0" text="End Chap">
+        <Label layoutX="303.0" layoutY="72.0" text="End Chap">
             <font>
                 <Font size="23.0"/>
             </font>
         </Label>
-        <TextField fx:id="beginTxt" focusTraversable="false" layoutX="145.0" layoutY="74.0" maxHeight="-Infinity"
-                   maxWidth="-Infinity" prefHeight="39.0" prefWidth="70.0" text="1">
-            <tooltip>
-                <Tooltip text="Which chapter to start download"/>
-            </tooltip>
-            <font>
-                <Font size="18.0"/>
-            </font>
-        </TextField>
-        <TextField fx:id="endTxt" focusTraversable="false" layoutX="145.0" layoutY="108.0" maxHeight="-Infinity"
-                   maxWidth="-Infinity" prefHeight="39.0" prefWidth="70.0" text="20">
-            <tooltip>
-                <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
-            </tooltip>
-            <font>
-                <Font size="18.0"/>
-            </font>
-        </TextField>
         <Label layoutX="19.0" layoutY="143.0" text="Status">
             <font>
                 <Font size="23.0"/>
             </font>
         </Label>
-        <ScrollPane fitToWidth="true" hvalue="0.42" layoutX="18.0" layoutY="181.0" maxHeight="-Infinity"
-                    maxWidth="-Infinity" prefHeight="344.0" prefWidth="706.0" vvalue="0.43">
+        <ScrollPane fx:id="scrollP" fitToWidth="true" layoutX="18.0" layoutY="181.0" maxHeight="-Infinity"
+                    maxWidth="-Infinity" prefHeight="344.0" prefWidth="706.0">
             <content>
                 <TextFlow fx:id="statusTxt" focusTraversable="true" prefHeight="342.0" prefWidth="704.0"
-                          style="-fx-background-color: ghostwhite; -fx-border-color: lightgray;"/>
+                          style="-fx-background-color: #EEEEEE; -fx-border-color: #9E9E9E;"/>
             </content>
         </ScrollPane>
         <Label layoutX="227.0" layoutY="528.0" text="All rights reserved, Quyen Truong, 2018">
@@ -59,10 +43,10 @@
                 <Font name="Calibri Italic" size="18.0"/>
             </font>
         </Label>
-        <JFXTextField fx:id="urlTxt" focusColor="#5340a8" focusTraversable="false" labelFloat="true" layoutX="77.0"
-                      layoutY="14.0" prefHeight="44.0" prefWidth="645.0"
-                      style="-fx-text-fill: blue; -fx-background-color: white;"
-                      text="https://hamtruyen.com/vo-than-chua-te-0.html" unFocusColor="#363030">
+        <JFXTextField id="textField" fx:id="urlTxt" focusColor="#5340a8" labelFloat="true" layoutX="77.0" layoutY="14.0"
+                      prefHeight="44.0" prefWidth="645.0" style="-fx-text-fill: #1565C0; -fx-background-color: #F5F5F5;"
+                      styleClass="..\assets\style.css" text="https://hamtruyen.com/vo-than-chua-te-0.html"
+                      unFocusColor="#363030">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -70,25 +54,21 @@
                 <Tooltip text="Input link "/>
             </tooltip>
         </JFXTextField>
-        <JFXButton fx:id="HelpBtn" layoutX="574.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
-                   ripplerFill="#3124a8" text="Help" textFill="#37353c">
+        <JFXButton id="circle" fx:id="HelpBtn" alignment="CENTER" layoutX="622.0" layoutY="62.0" prefHeight="63.0"
+                   prefWidth="150.0" ripplerFill="#3124a8" styleClass="..\assets\style.css" text="Help"
+                   textFill="#37353c">
             <font>
                 <Font size="26.0"/>
             </font>
-            <effect>
-                <Shadow/>
-            </effect>
         </JFXButton>
-        <JFXButton fx:id="StartBtn" layoutX="424.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
-                   ripplerFill="#3124a8" text="Start" textFill="#37353c">
+        <JFXButton id="circle" fx:id="StartBtn" alignment="CENTER" layoutX="515.0" layoutY="62.0" prefHeight="63.0"
+                   prefWidth="150.0" ripplerFill="#3124a8" styleClass="..\assets\style.css" text="Start"
+                   textFill="#37353c">
             <font>
                 <Font size="26.0"/>
             </font>
-            <effect>
-                <Shadow/>
-            </effect>
         </JFXButton>
-        <JFXButton fx:id="StopBtn" layoutX="424.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
+        <JFXButton id="circle" fx:id="StopBtn" layoutX="515.0" layoutY="62.0" prefHeight="63.0" prefWidth="150.0"
                    ripplerFill="#3124a8" text="Stop" textFill="#37353c" visible="false">
             <font>
                 <Font size="26.0"/>
@@ -97,11 +77,34 @@
                 <Shadow/>
             </effect>
         </JFXButton>
-        <JFXProgressBar fx:id="pbar" layoutX="228.0" layoutY="91.0" prefHeight="34.0" progress="0.0" visible="false"/>
-        <Label fx:id="processTxt" layoutX="305.0" layoutY="91.0" visible="false">
+        <JFXProgressBar fx:id="pbar" layoutX="150.0" layoutY="126.0" prefHeight="34.0" prefWidth="324.0" progress="0.0"
+                        visible="false">
+            <effect>
+                <Glow level="0.31"/>
+            </effect>
+        </JFXProgressBar>
+        <Label fx:id="processTxt" layoutX="289.0" layoutY="126.0" visible="false">
             <font>
                 <Font size="23.0"/>
             </font>
         </Label>
+        <JFXTextField id="textField" fx:id="beginTxt" alignment="TOP_CENTER" labelFloat="true" layoutX="149.0"
+                      layoutY="69.0" prefHeight="41.0" prefWidth="63.0" styleClass="..\assets\style.css" text="1">
+            <tooltip>
+                <Tooltip text="Which chapter to start download"/>
+            </tooltip>
+            <font>
+                <Font size="18.0"/>
+            </font>
+        </JFXTextField>
+        <JFXTextField id="textField" fx:id="endTxt" alignment="TOP_CENTER" labelFloat="true" layoutX="407.0"
+                      layoutY="69.0" prefHeight="41.0" prefWidth="63.0" styleClass="..\assets\style.css" text="20">
+            <font>
+                <Font size="18.0"/>
+            </font>
+            <tooltip>
+                <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
+            </tooltip>
+        </JFXTextField>
     </children>
 </AnchorPane>
