@@ -1,11 +1,10 @@
-package sample;
+package sample.controller;
 
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -21,6 +20,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import sample.extra.Ekstra;
+import sample.extra.JsonWebsite;
 
 import java.awt.*;
 import java.io.*;
@@ -30,7 +31,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
 /**
@@ -39,7 +39,7 @@ import java.util.function.UnaryOperator;
  * @author Quyen Truong
  * @version 1.4
  */
-public class Controller implements Initializable {
+public class Controller {
     private File selectedDirectory;
     private ArrayList<String> log;
     private Boolean isLog = false;
@@ -79,8 +79,8 @@ public class Controller implements Initializable {
     private ScrollPane scrollP;
 
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    @FXML
+    public void initialize() {
         HelpBtn.setId("circle");
         StartBtn.setId("circle");
         ControlSubThread ct = new ControlSubThread();
@@ -249,7 +249,7 @@ public class Controller implements Initializable {
         private int end;
         private Element title;
         private JSONObject website;
-        private Extra extra;
+        private Ekstra ekstra;
 
         /**
          * For example, download this manga from chapter 1 to chapter 30
@@ -262,7 +262,7 @@ public class Controller implements Initializable {
             this.url = url;
             this.begin = begin;
             this.end = end;
-            extra = new Extra();
+            ekstra = new Ekstra();
             assert begin != 0 : "begin has to be greater than 0";
             assert end != 0 : "end has to be greater than 0";
             website = new JsonWebsite(url).getWebsite();
@@ -312,21 +312,21 @@ public class Controller implements Initializable {
                     URL image;
                     String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text().trim(), chapTitle_s.trim(), pageNumber);
                     try {
-                        image = extra.parseURL(src);
+                        image = ekstra.parseURL(src);
                         if (image == null)
                             throw new Exception("Cannot parse URL");
 
                         FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
 
-                        if (extra.isValidJPG(fileName)) {
+                        if (ekstra.isValidJPG(fileName)) {
                             if (new File(fileName + ".jpg").exists())
                                 FileUtils.forceDelete(new File(fileName + ".jpg"));
                             FileUtils.moveFile(new File(fileName), new File(fileName + ".jpg"));
-                        } else if (extra.isValidPNG(fileName)) {
+                        } else if (ekstra.isValidPNG(fileName)) {
                             if (new File(fileName + ".png").exists())
                                 FileUtils.forceDelete(new File(fileName + ".png"));
                             FileUtils.moveFile(new File(fileName), new File(fileName + ".png"));
-                        } else if (extra.isValidGIF(fileName)) {
+                        } else if (ekstra.isValidGIF(fileName)) {
                             FileUtils.forceDelete(new File(fileName));
                             showText(String.format("Delete %s", fileName + ".gif"), true, true);
                         }
@@ -398,7 +398,7 @@ public class Controller implements Initializable {
 
 
             Document doc;
-            extra.enableSSLSocket();
+            ekstra.enableSSLSocket();
             try {
                 doc = Jsoup.connect(url).timeout(10000).get();
             } catch (Exception e) {

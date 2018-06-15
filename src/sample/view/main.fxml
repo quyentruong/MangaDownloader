@@ -8,8 +8,8 @@
 <?import javafx.scene.text.*?>
 <AnchorPane fx:id="anchorP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
             prefHeight="558.0" prefWidth="736.0" style="-fx-background-color: #C8E6C9;"
-            stylesheets="@../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
-            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+            stylesheets="@../../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
+            xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.Controller">
     <children>
         <Label layoutX="19.0" layoutY="20.0" text="URL">
             <font>

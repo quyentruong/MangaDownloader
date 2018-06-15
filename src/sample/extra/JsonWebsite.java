@@ -1,18 +1,18 @@
-package sample;
+package sample.extra;
 
 import org.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Set;
 
-class JsonWebsite {
+public class JsonWebsite {
     private JSONObject website;
     private JSONObject websites;
     private Set<String> mangaSet;
     private boolean isValidURL;
 
 
-    JsonWebsite(String url) {
+    public JsonWebsite(String url) {
         mangaSet = new HashSet<>();
         init();
 
@@ -31,7 +31,7 @@ class JsonWebsite {
         }
     }
 
-    JSONObject getWebsite() {
+    public JSONObject getWebsite() {
         return website;
     }
 

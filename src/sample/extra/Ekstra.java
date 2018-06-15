@@ -1,4 +1,4 @@
-package sample;
+package sample.extra;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.apache.commons.io.FileUtils;
@@ -17,10 +17,10 @@ import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
-class Extra {
+public class Ekstra {
     private PrintStream ps_console;
 
-    Extra() {
+    public Ekstra() {
         ps_console = System.out;
     }
 
@@ -30,7 +30,7 @@ class Extra {
     /**
      * Use this one before use Jsoup.connect to solve ssl problem
      */
-    void enableSSLSocket() {
+    public void enableSSLSocket() {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
 
         SSLContext context = null;
@@ -58,7 +58,7 @@ class Extra {
         HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
     }
 
-    boolean isValidPNG(String fileName) {
+    public boolean isValidPNG(String fileName) {
         File png = new File(fileName);
         try {
             byte[] data = FileUtils.readFileToByteArray(png);
@@ -72,7 +72,7 @@ class Extra {
         return false;
     }
 
-    boolean isValidJPG(String fileName) {
+    public boolean isValidJPG(String fileName) {
         File jpg = new File(fileName);
         try {
             byte[] data = FileUtils.readFileToByteArray(jpg);
@@ -87,7 +87,7 @@ class Extra {
         return false;
     }
 
-    boolean isValidGIF(String fileName) {
+    public boolean isValidGIF(String fileName) {
         File gif = new File(fileName);
         try {
             byte[] data = FileUtils.readFileToByteArray(gif);
@@ -101,7 +101,7 @@ class Extra {
         return false;
     }
 
-    URL parseURL(String src) {
+    public URL parseURL(String src) {
         if (src.contains("url=")) src = src.split("url=")[1];
         if (src.contains("?imgmax=0")) src = src.replace("?imgmax=0", "").trim();
         String temp = null;
