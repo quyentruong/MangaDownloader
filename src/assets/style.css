@@ -7,16 +7,16 @@
     -fx-max-height: 70px;
 }
 
-#textField, #textBackground {
+#combo, #textField, #textBackground {
     -fx-background-color: #EEEEEE;
     -fx-border-color: #9E9E9E;
 }
 
-#textField {
+#combo, #textField {
     -fx-border-style: solid hidden hidden hidden;
 }
 
-#warning, #default {
+#combo, #warning, #default {
     -fx-font-size: 20;
 }
 

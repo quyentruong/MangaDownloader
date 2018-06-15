@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.*?>
 <AnchorPane fx:id="anchorP" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-            prefHeight="558.0" prefWidth="736.0" style="-fx-background-color: #C8E6C9;"
+            prefHeight="610.0" prefWidth="736.0" style="-fx-background-color: #C8E6C9;"
             stylesheets="@../../assets/style.css" xmlns="http://javafx.com/javafx/8.0.171"
             xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.controller.Controller">
     <children>
@@ -26,19 +26,19 @@
                 <Font size="23.0"/>
             </font>
         </Label>
-        <Label layoutX="19.0" layoutY="143.0" text="Status">
+        <Label layoutX="19.0" layoutY="200.0" text="Status">
             <font>
                 <Font size="23.0"/>
             </font>
         </Label>
-        <ScrollPane fx:id="scrollP" fitToWidth="true" layoutX="18.0" layoutY="181.0" maxHeight="-Infinity"
+        <ScrollPane fx:id="scrollP" fitToWidth="true" layoutX="18.0" layoutY="230.0" maxHeight="-Infinity"
                     maxWidth="-Infinity" prefHeight="344.0" prefWidth="706.0">
             <content>
                 <TextFlow fx:id="statusTxt" focusTraversable="true" prefHeight="342.0" prefWidth="704.0"
                           style="-fx-background-color: #EEEEEE; -fx-border-color: #9E9E9E;"/>
             </content>
         </ScrollPane>
-        <Label layoutX="227.0" layoutY="528.0" text="All rights reserved, Quyen Truong, 2018">
+        <Label layoutX="227.0" layoutY="580.0" text="All rights reserved, Quyen Truong, 2018">
             <font>
                 <Font name="Calibri Italic" size="18.0"/>
             </font>
@@ -77,12 +77,13 @@
                 <Shadow/>
             </effect>
         </JFXButton>
-        <JFXProgressBar fx:id="pbar" layoutX="302.0" layoutY="126.0" prefHeight="34.0" prefWidth="172.0" progress="0.0">
+        <JFXProgressBar fx:id="pbar" layoutX="303.0" layoutY="143.0" prefHeight="41.0" prefWidth="416.0" progress="0.0"
+                        visible="false">
             <effect>
                 <Glow level="0.31"/>
             </effect>
         </JFXProgressBar>
-        <Label fx:id="processTxt" layoutX="365.0" layoutY="126.0" text="3/22">
+        <Label fx:id="processTxt" layoutX="472.0" layoutY="143.0" prefHeight="41.0" prefWidth="63.0" visible="false">
             <font>
                 <Font size="23.0"/>
             </font>
@@ -105,6 +106,16 @@
                 <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
             </tooltip>
         </JFXTextField>
-        <JFXComboBox disable="true" layoutX="149.0" layoutY="122.0" prefHeight="41.0" prefWidth="63.0" visible="false"/>
+        <JFXComboBox fx:id="comboBox" labelFloat="true" layoutX="149.0" layoutY="143.0" prefHeight="41.0"
+                     prefWidth="90.0">
+            <tooltip>
+                <Tooltip text="Download multiple files at the same time"/>
+            </tooltip>
+        </JFXComboBox>
+        <Label layoutX="16.0" layoutY="143.0" text="Max Files">
+            <font>
+                <Font size="23.0"/>
+            </font>
+        </Label>
     </children>
 </AnchorPane>

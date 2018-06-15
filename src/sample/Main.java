@@ -11,7 +11,7 @@ import javafx.stage.Stage;
  * Start UI
  *
  * @author Quyen Truong
- * @version 1.4
+ * @version 1.5
  */
 public class Main extends Application {
 
@@ -20,7 +20,7 @@ public class Main extends Application {
         Parent root = FXMLLoader.load(getClass().getResource("view/main.fxml"));
         primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("/assets/icon.png")));
         primaryStage.setTitle("Manga Downloader");
-        primaryStage.setScene(new Scene(root, 736, 558));
+        primaryStage.setScene(new Scene(root, 736, 610));
         primaryStage.setResizable(false);
         primaryStage.show();
 

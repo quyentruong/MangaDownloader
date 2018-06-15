@@ -29,7 +29,10 @@ import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.UnaryOperator;
@@ -38,7 +41,7 @@ import java.util.function.UnaryOperator;
  * Control elements in UI
  *
  * @author Quyen Truong
- * @version 1.4
+ * @version 1.5
  */
 public class Controller {
     private File selectedDirectory;
@@ -85,24 +88,17 @@ public class Controller {
     @FXML
     private ScrollPane scrollP;
 
-    JFXComboBox<Integer> comboBox;
+    @FXML
+    private JFXComboBox<Integer> comboBox;
 
     private void comboxSetup() {
-        comboBox = new JFXComboBox<>();
-        comboBox.setId("textField");
-        comboBox.setStyle("-fx-font-size: 20px;");
+        comboBox.setId("combo");
         comboBox.getItems().add(1);
         comboBox.getItems().add(2);
         comboBox.getItems().add(3);
         comboBox.getItems().add(4);
-        comboBox.getSelectionModel().selectFirst();
-        comboBox.setLayoutX(149);
-        comboBox.setLayoutY(122);
-        comboBox.setPrefHeight(41);
-        comboBox.setPrefWidth(90);
-        anchorP.getChildren().add(comboBox);
+        comboBox.getSelectionModel().select(1);
     }
-
 
     @FXML
     public void initialize() {
@@ -131,11 +127,11 @@ public class Controller {
         });
         HelpBtn.setOnAction(event -> {
             isLog = false;
+            showText("• Support: hamtruyen, truyensieuhay, nettruyen\n               truyenchon, truyenpub, uptruyen");
+            showText("• Max Files allow to download multiple files at the same time.", true);
+            showText("• Put the same number in 'begin' and 'end' chap will download that Chapter.\nEx: Put 20 in 'begin' and 'end' will download Chapter 20.", true);
+            showText("• Put in URL like examples below", true);
 
-            showText("Support: hamtruyen, truyensieuhay, nettruyen\n               truyenchon, truyenpub, uptruyen");
-            showText("Put the same number in 'begin' and 'end' chap will download that Chapter.\nEx: Put 20 in 'begin' and 'end' will download Chapter 20", true);
-            showText("Put in URL like examples below", true);
-            showText(String.valueOf(comboBox.getValue()), true);
             ClickAbleLink("http://truyensieuhay.com/thoi-dai-x-long-1386.html");
             ClickAbleLink("http://uptruyen.com/manga/32227/adventure/the-gioi-tien-hiep.html");
             ClickAbleLink("http://www.nettruyen.com/truyen-tranh/dau-la-dai-luc");
@@ -178,6 +174,7 @@ public class Controller {
             endTxt.setDisable(false);
             pbar.setVisible(false);
             processTxt.setVisible(false);
+            comboBox.setDisable(false);
         } else {
             StartBtn.setVisible(false);
             StopBtn.setVisible(true);
@@ -187,13 +184,18 @@ public class Controller {
             endTxt.setDisable(true);
             pbar.setVisible(true);
             processTxt.setVisible(true);
+            comboBox.setDisable(true);
         }
     }
 
     private void stopAction(boolean downloaded) {
         if (downloaded)
             showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
-        String logName = title != null ? title.text() + "_" + website.getString("name") : "error";
+        DateFormat df = new SimpleDateFormat("yyyyMMddHHmmssZ");
+        Calendar calobj = Calendar.getInstance();
+        log.add(0, title.text() + " at " + website.getString("name") + "\n\n");
+        String logName = df.format(calobj.getTime());
+//        String logName = title != null ? title.text() + "_" + website.getString("name") : "error";
         try (PrintWriter writer = new PrintWriter(String.format("%s.log", logName), "UTF-8")) {
             for (String l : log) {
                 writer.println(l);
@@ -312,7 +314,7 @@ public class Controller {
                     image = ekstra.parseURL(src);
                     if (image == null)
                         throw new Exception("Cannot parse URL");
-//                    System.out.println(ThreadName + " is running " + image + "  " + pageNumber);
+                    System.out.println(ThreadName + " is running " + image + "  " + pageNumber);
 
                     FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
 
@@ -404,7 +406,7 @@ public class Controller {
 //                int pageNumber = 1;
                 pbar.setProgress(0);
                 totalPages = pages.size();
-                int maxThread = 3;
+                int maxThread = comboBox.getValue();
                 URLtoFile[] tasks = new URLtoFile[maxThread];
                 Thread[] threads = new Thread[maxThread];
                 for (int i = 0; i < maxThread; i++) {
@@ -437,9 +439,12 @@ public class Controller {
                     for (Thread thread : threads) {
                         thread.join(0);
                     }
+                    if (stop)
+                        Thread.currentThread().interrupt();
                     Thread.sleep(15000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    System.out.println("Sleep Interrupt");
+//                    e.printStackTrace();
                 }
             }
             showText("Done", true);
