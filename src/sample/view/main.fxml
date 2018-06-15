@@ -77,19 +77,18 @@
                 <Shadow/>
             </effect>
         </JFXButton>
-        <JFXProgressBar fx:id="pbar" layoutX="150.0" layoutY="126.0" prefHeight="34.0" prefWidth="324.0" progress="0.0"
-                        visible="false">
+        <JFXProgressBar fx:id="pbar" layoutX="302.0" layoutY="126.0" prefHeight="34.0" prefWidth="172.0" progress="0.0">
             <effect>
                 <Glow level="0.31"/>
             </effect>
         </JFXProgressBar>
-        <Label fx:id="processTxt" layoutX="289.0" layoutY="126.0" visible="false">
+        <Label fx:id="processTxt" layoutX="365.0" layoutY="126.0" text="3/22">
             <font>
                 <Font size="23.0"/>
             </font>
         </Label>
         <JFXTextField id="textField" fx:id="beginTxt" alignment="TOP_CENTER" labelFloat="true" layoutX="149.0"
-                      layoutY="69.0" prefHeight="41.0" prefWidth="63.0" styleClass="..\assets\style.css" text="1">
+                      layoutY="69.0" prefHeight="41.0" prefWidth="90.0" styleClass="..\assets\style.css" text="1">
             <tooltip>
                 <Tooltip text="Which chapter to start download"/>
             </tooltip>
@@ -98,7 +97,7 @@
             </font>
         </JFXTextField>
         <JFXTextField id="textField" fx:id="endTxt" alignment="TOP_CENTER" labelFloat="true" layoutX="407.0"
-                      layoutY="69.0" prefHeight="41.0" prefWidth="63.0" styleClass="..\assets\style.css" text="20">
+                      layoutY="69.0" prefHeight="41.0" prefWidth="90.0" styleClass="..\assets\style.css" text="20">
             <font>
                 <Font size="18.0"/>
             </font>
@@ -106,5 +105,6 @@
                 <Tooltip text="Which chapter to end download. Put 9999 to reach the end."/>
             </tooltip>
         </JFXTextField>
+        <JFXComboBox disable="true" layoutX="149.0" layoutY="122.0" prefHeight="41.0" prefWidth="63.0" visible="false"/>
     </children>
 </AnchorPane>

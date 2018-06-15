@@ -1,6 +1,7 @@
 package sample.controller;
 
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXComboBox;
 import com.jfoenix.controls.JFXProgressBar;
 import com.jfoenix.controls.JFXTextField;
 import javafx.application.Platform;
@@ -44,6 +45,12 @@ public class Controller {
     private ArrayList<String> log;
     private Boolean isLog = false;
     private Boolean stop = false;
+    private int task_count;
+    private int totalPages;
+    private Element title;
+    private JSONObject website;
+    private Ekstra ekstra;
+    private String chapTitle_s;
 
     @FXML
     private AnchorPane anchorP;
@@ -78,9 +85,28 @@ public class Controller {
     @FXML
     private ScrollPane scrollP;
 
+    JFXComboBox<Integer> comboBox;
+
+    private void comboxSetup() {
+        comboBox = new JFXComboBox<>();
+        comboBox.setId("textField");
+        comboBox.setStyle("-fx-font-size: 20px;");
+        comboBox.getItems().add(1);
+        comboBox.getItems().add(2);
+        comboBox.getItems().add(3);
+        comboBox.getItems().add(4);
+        comboBox.getSelectionModel().selectFirst();
+        comboBox.setLayoutX(149);
+        comboBox.setLayoutY(122);
+        comboBox.setPrefHeight(41);
+        comboBox.setPrefWidth(90);
+        anchorP.getChildren().add(comboBox);
+    }
+
 
     @FXML
     public void initialize() {
+        comboxSetup();
         HelpBtn.setId("circle");
         StartBtn.setId("circle");
         ControlSubThread ct = new ControlSubThread();
@@ -90,6 +116,7 @@ public class Controller {
             if (selectedDirectory == null) {
                 showText("No Directory selected", false, true);
             } else {
+                stop = false;
                 isLog = true;
                 log = new ArrayList<>();
                 ct.start();
@@ -104,9 +131,11 @@ public class Controller {
         });
         HelpBtn.setOnAction(event -> {
             isLog = false;
+
             showText("Support: hamtruyen, truyensieuhay, nettruyen\n               truyenchon, truyenpub, uptruyen");
             showText("Put the same number in 'begin' and 'end' chap will download that Chapter.\nEx: Put 20 in 'begin' and 'end' will download Chapter 20", true);
             showText("Put in URL like examples below", true);
+            showText(String.valueOf(comboBox.getValue()), true);
             ClickAbleLink("http://truyensieuhay.com/thoi-dai-x-long-1386.html");
             ClickAbleLink("http://uptruyen.com/manga/32227/adventure/the-gioi-tien-hiep.html");
             ClickAbleLink("http://www.nettruyen.com/truyen-tranh/dau-la-dai-luc");
@@ -159,6 +188,21 @@ public class Controller {
             pbar.setVisible(true);
             processTxt.setVisible(true);
         }
+    }
+
+    private void stopAction(boolean downloaded) {
+        if (downloaded)
+            showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
+        String logName = title != null ? title.text() + "_" + website.getString("name") : "error";
+        try (PrintWriter writer = new PrintWriter(String.format("%s.log", logName), "UTF-8")) {
+            for (String l : log) {
+                writer.println(l);
+            }
+        } catch (FileNotFoundException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), logName), true);
+        statusComponent(true);
     }
 
     /**
@@ -240,6 +284,68 @@ public class Controller {
         }
     }
 
+    class URLtoFile implements Runnable {
+        List<Element> pages;
+        private int pageNumber;
+        String ThreadName;
+
+        URLtoFile(String ThreadName, List<Element> pages, int pageNumber) {
+            this.pages = pages;
+            this.pageNumber = pageNumber;
+            this.ThreadName = ThreadName;
+        }
+
+        @Override
+        public void run() {
+            for (Element page : pages) {
+                if (stop) {
+//                    showText("Stop downloading", true, true);
+//                    stopAction(true);
+//                    stop = false;
+                    return;
+                }
+                String src = page.attr("src");
+
+                URL image;
+                String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text().trim(), chapTitle_s.trim(), pageNumber);
+                try {
+                    image = ekstra.parseURL(src);
+                    if (image == null)
+                        throw new Exception("Cannot parse URL");
+//                    System.out.println(ThreadName + " is running " + image + "  " + pageNumber);
+
+                    FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
+
+                    if (ekstra.isValidJPG(fileName)) {
+                        if (new File(fileName + ".jpg").exists())
+                            FileUtils.forceDelete(new File(fileName + ".jpg"));
+                        FileUtils.moveFile(new File(fileName), new File(fileName + ".jpg"));
+                    } else if (ekstra.isValidPNG(fileName)) {
+                        if (new File(fileName + ".png").exists())
+                            FileUtils.forceDelete(new File(fileName + ".png"));
+                        FileUtils.moveFile(new File(fileName), new File(fileName + ".png"));
+                    } else if (ekstra.isValidGIF(fileName)) {
+                        FileUtils.forceDelete(new File(fileName));
+                        showText(String.format("Delete %s", fileName + ".gif"), true, true);
+                    }
+                } catch (Exception e) {
+                    try {
+                        new RandomAccessFile(new File(fileName), "rw").setLength(100);
+                        showText(fileName + " is a null file.", true, true);
+                    } catch (Exception e1) {
+                        showText(fileName + " is not available", true, true);
+                    }
+                }
+
+                task_count += 1;
+                Platform.runLater(() -> processTxt.setText(String.format("%d/%d", task_count, totalPages)));
+                pbar.setProgress(task_count * 1.0 / totalPages);
+                pageNumber += 1;
+            }
+
+        }
+    }
+
     /**
      * Parse all information in manga website then start download
      */
@@ -247,9 +353,6 @@ public class Controller {
         private String url;
         private int begin;
         private int end;
-        private Element title;
-        private JSONObject website;
-        private Ekstra ekstra;
 
         /**
          * For example, download this manga from chapter 1 to chapter 30
@@ -276,6 +379,7 @@ public class Controller {
             }
 
             for (String url : links) {
+                task_count = 0;
                 Document doc;
                 try {
                     doc = Jsoup.connect(url).timeout(10000).get();
@@ -294,58 +398,46 @@ public class Controller {
                 Elements pages = doc.select(website.getString("pages"));
                 Elements chapTitle = doc.select(website.getString("chapTitle"));
 
-                String chapTitle_s = chapTitle.text().toLowerCase().contains("chap") ? chapTitle.text() : chapTitle.attr("alt");
+                chapTitle_s = chapTitle.text().toLowerCase().contains("chap") ? chapTitle.text() : chapTitle.attr("alt");
                 chapTitle_s = chapTitle_s.replaceAll("[\\\\/:*?\"<>|]", "");
                 if (!stop) showText(String.format("Downloading %s ...", chapTitle_s), true);
-                int pageNumber = 1;
+//                int pageNumber = 1;
                 pbar.setProgress(0);
-
-                for (Element page : pages) {
-                    if (stop) {
-                        showText("Stop downloading", true, true);
-                        stopAction(true);
-                        stop = false;
-                        return;
-                    }
-                    String src = page.attr("src");
-
-                    URL image;
-                    String fileName = String.format("%s/%s/%s/%s/%03d", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text().trim(), chapTitle_s.trim(), pageNumber);
-                    try {
-                        image = ekstra.parseURL(src);
-                        if (image == null)
-                            throw new Exception("Cannot parse URL");
-
-                        FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
-
-                        if (ekstra.isValidJPG(fileName)) {
-                            if (new File(fileName + ".jpg").exists())
-                                FileUtils.forceDelete(new File(fileName + ".jpg"));
-                            FileUtils.moveFile(new File(fileName), new File(fileName + ".jpg"));
-                        } else if (ekstra.isValidPNG(fileName)) {
-                            if (new File(fileName + ".png").exists())
-                                FileUtils.forceDelete(new File(fileName + ".png"));
-                            FileUtils.moveFile(new File(fileName), new File(fileName + ".png"));
-                        } else if (ekstra.isValidGIF(fileName)) {
-                            FileUtils.forceDelete(new File(fileName));
-                            showText(String.format("Delete %s", fileName + ".gif"), true, true);
-                        }
-                    } catch (Exception e) {
-                        try {
-                            new RandomAccessFile(new File(fileName), "rw").setLength(100);
-                            showText(fileName + " is a null file.", true, true);
-                        } catch (Exception e1) {
-                            showText(fileName + " is not available", true, true);
-                        }
-                    }
-                    int finalPageNumber = pageNumber;
-                    Platform.runLater(() -> processTxt.setText(String.format("%d/%d", finalPageNumber, pages.size())));
-
-                    pbar.setProgress(pageNumber * 1.0 / pages.size());
-                    pageNumber += 1;
+                totalPages = pages.size();
+                int maxThread = 3;
+                URLtoFile[] tasks = new URLtoFile[maxThread];
+                Thread[] threads = new Thread[maxThread];
+                for (int i = 0; i < maxThread; i++) {
+                    double low = totalPages * i * 1.0 / maxThread;
+                    double high = totalPages * (i + 1) * 1.0 / maxThread;
+                    int pageNumber = (int) low + 1;
+                    tasks[i] = new URLtoFile("Task " + (i + 1), pages.subList((int) low, (int) high), pageNumber);
+                    threads[i] = new Thread(tasks[i]);
+                    threads[i].start();
                 }
+//                double mid1 = pages.size() / 3.0;
+//                double mid2 = pages.size() * 2 / 3.0;
+//                URLtoFile task1 = new URLtoFile("Task 1", pages.subList(0, (int) mid1), chapTitle_s, 1);
+//                URLtoFile task2 = new URLtoFile("Task 2", pages.subList((int) mid1, (int) mid2), chapTitle_s, (int) Math.ceil(mid1) + 1);
+//                URLtoFile task3 = new URLtoFile("Task 3", pages.subList((int) mid2, pages.size()), chapTitle_s, (int) Math.ceil(mid2) + 1);
+//                Thread t = new Thread(task1);
+//                Thread t2 = new Thread(task2);
+//                Thread t3 = new Thread(task3);
+//
+//                t.start();
+//                t2.start();
+//                t3.start();
+                if (stop) {
+                    showText("Stop downloading", true, true);
+                    stopAction(true);
+                    return;
+                }
+
                 try {
-                    Thread.sleep(10000);
+                    for (Thread thread : threads) {
+                        thread.join(0);
+                    }
+                    Thread.sleep(15000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -354,20 +446,6 @@ public class Controller {
             stopAction(true);
         }
 
-        private void stopAction(boolean downloaded) {
-            if (downloaded)
-                showText(String.format("Your manga downloaded in %s/%s/%s/", selectedDirectory.getAbsolutePath(), website.getString("name"), title.text()), true);
-            String logName = title != null ? title.text() + "_" + website.getString("name") : "error";
-            try (PrintWriter writer = new PrintWriter(String.format("%s.log", logName), "UTF-8")) {
-                for (String l : log) {
-                    writer.println(l);
-                }
-            } catch (FileNotFoundException | UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-            showText(String.format("Log saved in %s/%s.log", System.getProperty("user.dir"), logName), true);
-            statusComponent(true);
-        }
 
         /**
          * @return List of chapter of a manga
