@@ -91,14 +91,18 @@ public class Controller {
     @FXML
     private JFXComboBox<Integer> comboBox;
 
+
     private void comboxSetup() {
         comboBox.setId("combo");
         comboBox.getItems().add(1);
         comboBox.getItems().add(2);
         comboBox.getItems().add(3);
         comboBox.getItems().add(4);
-        comboBox.getSelectionModel().select(1);
+        comboBox.getSelectionModel().select(2);
     }
+
+    private Thread worker;
+
 
     @FXML
     public void initialize() {
@@ -107,11 +111,15 @@ public class Controller {
         StartBtn.setId("circle");
         ControlSubThread ct = new ControlSubThread();
         StartBtn.setOnAction(event -> {
+            anchorP.setDisable(true);
             DirectoryChooser directoryChooser = new DirectoryChooser();
             selectedDirectory = directoryChooser.showDialog(null);
             if (selectedDirectory == null) {
+                isLog = false;
+                anchorP.setDisable(false);
                 showText("No Directory selected", false, true);
             } else {
+                anchorP.setDisable(false);
                 stop = false;
                 isLog = true;
                 log = new ArrayList<>();
@@ -122,12 +130,19 @@ public class Controller {
         });
         StopBtn.setOnAction(event -> {
             ct.stop();
-            statusComponent(true);
+            showText("Waiting to stop", true, true);
+            StopBtn.setDisable(true);
             isLog = false;
         });
         HelpBtn.setOnAction(event -> {
             isLog = false;
-            showText("• Support: hamtruyen, truyensieuhay, nettruyen\n               truyenchon, truyenpub, uptruyen");
+            showText("• Support:");
+            ClickAbleLink("https://hamtruyen.com/");
+            ClickAbleLink("http://truyensieuhay.com/");
+            ClickAbleLink("http://www.nettruyen.com/");
+            ClickAbleLink("http://truyenchon.com/");
+            ClickAbleLink("https://truyenpub.com/");
+            ClickAbleLink("http://uptruyen.com/");
             showText("• Max Files allow to download multiple files at the same time.", true);
             showText("• Put the same number in 'begin' and 'end' chap will download that Chapter.\nEx: Put 20 in 'begin' and 'end' will download Chapter 20.", true);
             showText("• Put in URL like examples below", true);
@@ -168,6 +183,7 @@ public class Controller {
         if (stop) {
             StartBtn.setVisible(true);
             StopBtn.setVisible(false);
+            StopBtn.setDisable(false);
             HelpBtn.setDisable(false);
             urlTxt.setDisable(false);
             beginTxt.setDisable(false);
@@ -221,7 +237,9 @@ public class Controller {
                     e.printStackTrace();
                 }
             });
+            statusTxt.getChildren().add(new Text("\t◦"));
             statusTxt.getChildren().add(example);
+            statusTxt.getChildren().add(new Text("\n"));
         });
     }
 
@@ -266,7 +284,6 @@ public class Controller {
      */
     private class ControlSubThread implements Runnable {
         Modules Manga;
-        private Thread worker;
 
         void start() {
             stop = false;
@@ -314,7 +331,7 @@ public class Controller {
                     image = ekstra.parseURL(src);
                     if (image == null)
                         throw new Exception("Cannot parse URL");
-                    System.out.println(ThreadName + " is running " + image + "  " + pageNumber);
+//                    System.out.println(ThreadName + " is running " + image + "  " + pageNumber);
 
                     FileUtils.copyURLToFile(image, new File(fileName), 15000, 15000);
 
@@ -429,25 +446,36 @@ public class Controller {
 //                t.start();
 //                t2.start();
 //                t3.start();
-                if (stop) {
-                    showText("Stop downloading", true, true);
-                    stopAction(true);
-                    return;
+//                System.out.println("Before " + Thread.currentThread());
+
+                if (stop && !worker.isAlive()) {
+//                    showText("Stop downloading", true, true);
+//                    stopAction(true);
+//                    return;
+                    break;
                 }
 
                 try {
                     for (Thread thread : threads) {
                         thread.join(0);
                     }
-                    if (stop)
-                        Thread.currentThread().interrupt();
-                    Thread.sleep(15000);
+                    if (!stop)
+                        worker.join(8500);
+                    else
+                        break;
                 } catch (InterruptedException e) {
                     System.out.println("Sleep Interrupt");
 //                    e.printStackTrace();
                 }
+
             }
-            showText("Done", true);
+            if (stop && worker.isAlive()) {
+                showText("Stop downloading", true, true);
+            } else {
+                showText("Done", true);
+            }
+//            System.out.println("After " + Thread.currentThread());
+
             stopAction(true);
         }
 
